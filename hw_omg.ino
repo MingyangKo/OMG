@@ -157,7 +157,7 @@ int buttonleft = 7;
 int buttonrightstate = 0;
 int buttonleftstate = 0;
 
-bool flag = false;
+int flag = 0;//1遊戲進行，2過關，3失敗
 
 void draw(){
   display.clearDisplay();
@@ -196,21 +196,35 @@ void movement(){
   else manstate = 0; //站著
 
   if(box_x<128)box_x++; //天空墜落
-  if(box_x==128 && box_y[i]!=0)i++; //下一塊天空的編號  
+  if(box_x==128)i++; //下一塊天空的編號  
   if(box_x==128)box_x=0; //下一塊天空開始墜落
+  if(box_y[i]==0){
+    flag=2;
+    i=0;
+    delay(100);
+    }
  
   // (人的頭與天空的高度相同)&&(人站的地方在左雲的範圍內)&&(人站的地方在右雲的範圍內)
     if((box_x>=111) && ((man_y+5<box_y[i]) || ( (man_y+4)>(box_y[i]+space+1) ))) {
-      flag=true;
+      flag=3;
+      delay(100);      
     }
    
  }
  
  
- void gameover(){ //遊戲失敗
+ void gameover(){ //遊戲結束
    display.clearDisplay();
-   display.drawBitmap(0,0,be,128,32,WHITE);
+   if(flag==2) display.drawBitmap(0,0,ge,128,32,WHITE);
+   else display.drawBitmap(0,0,be,128,32,WHITE);
    display.display();
+
+   man_y=12;box_x=0;i=0;
+   
+   if(buttonrightstate||buttonleftstate){    
+    flag=0;
+    delay(100);
+   }
 }
 
 void setup() {
@@ -224,17 +238,25 @@ void setup() {
   
   display.begin(SSD1306_SWITCHCAPVCC,0x3D);
   display.clearDisplay();
-  display.drawBitmap(111,man_y,stand,16,8,WHITE);
-  //display.drawBitmap(0,0,start,128,32,WHITE);
-  //display.drawBitmap(0,0,ge,128,32,WHITE);
-  //display.drawBitmap(0,0,be,128,32,WHITE);
+  display.drawBitmap(0,0,start,128,32,WHITE);
   display.display();
 }
 
 void loop() {
-  Serial.println(buttonleftstate);
-  if(!flag){
+  buttonrightstate= digitalRead(buttonright);
+  buttonleftstate= digitalRead(buttonleft);
+  Serial.println(flag);
+  if(flag==0){
+    display.clearDisplay();
+    display.drawBitmap(0,0,start,128,32,WHITE);
+    display.display();
+    if((buttonrightstate||buttonleftstate)){
+      flag=1;
+      delay(100);
+    }
+  }
+  if(flag==1){
     movement();
     draw();  
-  }else gameover();
+  }else if(flag==2 || flag==3) gameover();
 }
