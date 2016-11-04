@@ -237,6 +237,19 @@ void movement(){
   if(box_x==128 && box_y[i]!=0)i++; //下一塊天空的編號  
   if(box_x==128)box_x=0; //下一塊天空開始墜落
  
+  
+    if( (box_x==111)&&(man_y<box_y[i])&&( (man_y+8)>(box_y[i]+space+1) )// (人的頭與天空的高度相同)&&(人站的地方在左雲的範圍內)&&(人站的地方在右雲的範圍內)
+      {
+        gameover();//遊戲失敗
+      }
+   
+ }
+ 
+ 
+ void gameover(){ //遊戲失敗
+   display.clearDisplay();
+   display.drawBitmap(0,0,be,128,32,WHITE);
+   display.display();
 }
 
 void setup() {
