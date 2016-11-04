@@ -115,16 +115,6 @@ static const unsigned char PROGMEM be[]= { //bad end
   0x00,0x00,0x03,0x72,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x7e,0x00,0x00,0x00,
 };
 
-static const unsigned char PROGMEM runright1[]={
-  0x08,0x00,
-  0x64,0x3c,
-  0x78,0x40,
-  0x1f,0x80,
-  0x18,0xe0,
-  0x04,0x10,
-  0x00,0x08,
-  0x00,0x06,
-};
 static const unsigned char PROGMEM runright2[]={
   0x00,0x00,
   0x60,0x00,
@@ -135,27 +125,7 @@ static const unsigned char PROGMEM runright2[]={
   0x00,0x00,
   0x00,0x00,
 };
-static const unsigned char PROGMEM runright3[]= {
-  0x00,0x00,
-  0x00,0x00,
-  0x60,0x00,
-  0x7c,0x60,
-  0x0f,0xf8,
-  0x00,0x02,
-  0x00,0x00,
-  0x00,0x00,
-};
 
-static const unsigned char PROGMEM runleft1[]={
-  0x00,0x06,
-  0x00,0x08,
-  0x04,0x10,
-  0x18,0xe0,
-  0x1f,0x80,
-  0x78,0x40,
-  0x64,0x3c,
-  0x08,0x00,
-};
 static const unsigned char PROGMEM runleft2[]={ 
   0x00,0x00,
   0x00,0x00,
@@ -164,16 +134,6 @@ static const unsigned char PROGMEM runleft2[]={
   0x0f,0xe0,
   0x7e,0x3e,
   0x60,0x00,
-  0x00,0x00,
-};
-static const unsigned char PROGMEM runleft3[]={
-  0x00,0x00,
-  0x00,0x00,
-  0x00,0x00,
-  0x00,0x02,
-  0x0f,0xf8,
-  0x7c,0x60,
-  0x20,0x00,
   0x00,0x00,
 };
 
@@ -196,6 +156,8 @@ int buttonright = 6;
 int buttonleft = 7; 
 int buttonrightstate = 0;
 int buttonleftstate = 0;
+
+bool flag = false;
 
 void draw(){
   display.clearDisplay();
@@ -237,11 +199,10 @@ void movement(){
   if(box_x==128 && box_y[i]!=0)i++; //下一塊天空的編號  
   if(box_x==128)box_x=0; //下一塊天空開始墜落
  
-  
-    if( (box_x==111)&&(man_y<box_y[i])&&( (man_y+8)>(box_y[i]+space+1) )// (人的頭與天空的高度相同)&&(人站的地方在左雲的範圍內)&&(人站的地方在右雲的範圍內)
-      {
-        gameover();//遊戲失敗
-      }
+  // (人的頭與天空的高度相同)&&(人站的地方在左雲的範圍內)&&(人站的地方在右雲的範圍內)
+    if((box_x>=111) && ((man_y+5<box_y[i]) || ( (man_y+4)>(box_y[i]+space+1) ))) {
+      flag=true;
+    }
    
  }
  
@@ -263,15 +224,17 @@ void setup() {
   
   display.begin(SSD1306_SWITCHCAPVCC,0x3D);
   display.clearDisplay();
-  //display.drawBitmap(111,man_y,stand,16,8,WHITE);
+  display.drawBitmap(111,man_y,stand,16,8,WHITE);
   //display.drawBitmap(0,0,start,128,32,WHITE);
-  display.drawBitmap(0,0,ge,128,32,WHITE);
+  //display.drawBitmap(0,0,ge,128,32,WHITE);
   //display.drawBitmap(0,0,be,128,32,WHITE);
   display.display();
 }
 
 void loop() {
-  //if(box_y[i]!=0)drop();
-  //movement();
-  //draw();
+  Serial.println(buttonleftstate);
+  if(!flag){
+    movement();
+    draw();  
+  }else gameover();
 }
