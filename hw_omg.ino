@@ -218,6 +218,7 @@ void movement(){
    if(flag==2) display.drawBitmap(0,0,ge,128,32,WHITE);
    else display.drawBitmap(0,0,be,128,32,WHITE);
    display.display();
+   delay(500);
 
    man_y=12;box_x=0;i=0;
    
@@ -240,6 +241,7 @@ void setup() {
   display.clearDisplay();
   display.drawBitmap(0,0,start,128,32,WHITE);
   display.display();
+  delay(500);
 }
 
 void loop() {
@@ -250,6 +252,7 @@ void loop() {
     display.clearDisplay();
     display.drawBitmap(0,0,start,128,32,WHITE);
     display.display();
+    delay(500);
     if((buttonrightstate||buttonleftstate)){
       flag=1;
       delay(100);
